@@ -1,0 +1,25 @@
+# Python
+backend/.venv/
+__pycache__/
+*.py[cod]
+*.db
+backend/turning_point.db
+.pytest_cache/
+.mypy_cache/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+
+# Local environment files
+.env
+.env.local
+frontend/.env
+frontend/.env.local
+*.local
+
+# OS and editors
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Turning Point Testing and Security Report</title>
+  <style>
+    @page { margin: 1in; }
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      line-height: 2;
+      margin: 1in;
+      color: #000;
+    }
+    h1, h2, p { font-size: 12pt; line-height: 2; margin: 0; }
+    h1, .center { text-align: center; }
+    h2 { font-weight: bold; }
+    p { text-align: justify; }
+  </style>
+</head>
+<body>
+  <h1>Turning Point Testing and Security Report</h1>
+  <p class="center">Yuxuan</p>
+  <p class="center">AIML 515</p>
+  <p class="center">October 4, 2026</p>
+
+  <p>Turning Point is a local chat. It saves one birth profile and three life events in SQLite, then builds one astrology reading on the same computer. Testing used the page at http://127.0.0.1:5173, the API at http://127.0.0.1:8000, and 23 Python unit tests.</p>
+
+  <h2>Features tested</h2>
+  <p>Send was clicked with an empty box and with spaces. Both showed “Type a message before sending” and did not add a turn. Enter submits. Shift+Enter does not. Restart returned to the birth-date question and left saved rows in SQLite. Retry appeared when the API was blocked, stayed on that error while it was still blocked, and reconnected after the API answered. Analyze on Smallville, a city not in the local list, showed an error and left the button available. Analyze on a Seattle profile showed the loading line and then one reading. Start Over cleared the reading and asked for the birth date again.</p>
+  <p>Answers covered a full date, a missing day, an approximate time, and an unknown birth time. The chat did not guess 05/06/1997, February 31, an emoji, “yes” as a city, or digits. Events covered two dates, a future date, a season, a year only, and “I may have changed jobs in 2019,” which stayed Career rather than May. “Maybe” asked for yes or no. “No” did not save. “Yes” saved one profile. The unknown-time reading uses noon and does not use the Moon or Ascendant. The result showed Past Pattern, one Future Transition Window, Possible Themes, Why This Period Stands Out, Similarities, How to Prepare, and the disclaimer. At 320×640, 390×700, 768×900, and 1920×1080, Restart did not cover the title, the page did not scroll sideways, and Analyze stayed on screen.</p>
+
+  <h2>Bugs found and fixed</h2>
+  <p>The button pass did not find a dead control. Three defects in those same flows were fixed. The future window could name a month that was not a match. For the Seattle profile, Pluto square natal Saturn does not return within 18 months, but the page still showed April–May 2027. The search now keeps the tightest similar pass from the same planet and says it is not an exact repeat. That window is October–December 2026. After a save, the assistant said calculations were not ready while Analyze was already visible. It now says to click Analyze. A failed request or render error could show a raw failure or a blank page. The page now shows a short message, and an unexpected server error returns plain JSON instead of a traceback.</p>
+
+  <h2>Security vulnerabilities identified and resolved</h2>
+  <p>No API keys or private keys were in the repository. A description containing DROP TABLE was stored as text and the profile table remained, because SQLAlchemy binds values instead of building the query from that text. Three handling problems were fixed. The database was mode 644, so other accounts on this Mac could read birth details and life events. It is now mode 600 when the API opens it. A rejected message copied the submitted sentence into the error. That copy is no longer returned. Responses could be cached, and a wrong API address could send the chat elsewhere. Responses now use Cache-Control: no-store, and the page accepts only a localhost address. There is still no login. The API listens on 127.0.0.1, and port 8000 should not be published.</p>
+
+  <h2>Accessibility features</h2>
+  <p>The message box has a label, Message, exposed to assistive software and hidden visually. New replies sit in a live log. The connection line is a status region. An empty send, an analysis error, and a page crash use an alert. Restart, Send, Analyze, Retry, and the message box show a visible focus outline. Main buttons are tall click targets and go full width on a narrow screen. Only the message list scrolls, so the action stays on screen. These were checked in the same pass. A formal screen-reader audit was not run.</p>
+</body>
+</html>

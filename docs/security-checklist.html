@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Turning Point Security Checklist</title>
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      line-height: 1.4;
+      margin: 1in;
+      color: #000;
+    }
+    h1 { font-size: 14pt; text-align: center; }
+    h2 { font-size: 12pt; margin-bottom: 0.2em; }
+    p.center { text-align: center; margin-top: 0; }
+    li { margin-bottom: 0.35em; }
+  </style>
+</head>
+<body>
+  <h1>Turning Point Security Checklist</h1>
+  <p class="center">Yuxuan · AIML 515 · October 4, 2026</p>
+  <p>Checked means the measure is in the running local application. The last three items are limits that were reviewed and left in place on purpose.</p>
+
+  <h2>Secrets</h2>
+  <ul>
+    <li>Checked. No API keys, passwords, tokens, or private keys are stored in the repository.</li>
+    <li>Checked. <code>.env</code> files are gitignored. <code>frontend/.env.example</code> contains only <code>http://127.0.0.1:8000</code>.</li>
+    <li>Checked. The chart library is called with <code>online=False</code>. City coordinates come from a local list, not a geocoding service.</li>
+    <li>Checked. The page refuses an API address whose host is not localhost, 127.0.0.1, or ::1, so birth details are not sent to another computer by a bad setting.</li>
+  </ul>
+
+  <h2>SQL injection</h2>
+  <ul>
+    <li>Checked. Profiles and life events are inserted and read with SQLAlchemy. User text is a bound value, not part of the SQL string.</li>
+    <li>Checked. The only direct SQL statement is <code>PRAGMA foreign_keys=ON</code>, which contains no user input.</li>
+    <li>Checked. A description containing <code>DROP TABLE</code> is stored as text, and the profile table is still there afterward.</li>
+    <li>Checked. A failed save rolls back the transaction, so a half-written profile is not left behind.</li>
+  </ul>
+
+  <h2>Personal data</h2>
+  <ul>
+    <li>Checked. <code>backend/turning_point.db</code> is gitignored and set to mode 600 when the API opens it. Other accounts on this Mac cannot read the file.</li>
+    <li>Checked. Chat text is limited to 1,000 characters. Birth fields, event dates, and descriptions are length-checked again before they are saved. The error does not repeat the text.</li>
+    <li>Checked. Validation errors omit the submitted <code>input</code>, so a rejected life-event sentence is not copied into the error body.</li>
+    <li>Checked. Unexpected server errors return a generic JSON message and do not include the exception text.</li>
+    <li>Checked. API responses send <code>Cache-Control: no-store</code>, <code>Pragma: no-cache</code>, <code>X-Content-Type-Options: nosniff</code>, and <code>Referrer-Policy: no-referrer</code>.</li>
+    <li>Checked. Session ids are random UUID values and are sent in the request body, not in the URL.</li>
+    <li>Checked. CORS allows only <code>http://127.0.0.1:5173</code> and <code>http://localhost:5173</code>, and only GET, POST, and OPTIONS.</li>
+    <li>Checked. The reading is rendered as text in React. The page does not assign user text to <code>innerHTML</code>.</li>
+    <li>Checked. The API process used for this project listens on 127.0.0.1, not on every network interface.</li>
+  </ul>
+
+  <h2>Reviewed and not changed</h2>
+  <ul>
+    <li>There is no login. <code>GET /users/1</code> returns that profile to any program that can already call 127.0.0.1:8000.</li>
+    <li>Profile ids are sequential. The SQLite file stores birth details and life events in plaintext.</li>
+    <li>Traffic is HTTP because both processes are on this computer. Do not publish port 8000.</li>
+  </ul>
+</body>
+</html>
